@@ -1,7 +1,6 @@
 from pathlib import Path
-import csv
-import re
 import os
+import json
 
 # The store manager needs a system that remembers inventory levels even after the
 # program closes. Furthermore, they need to store a history of all transaction amounts,
@@ -30,11 +29,17 @@ data_file = "src/model/inventory.json"
 # Persistence: At the start of the program, read the information previously saved
 # in the inventory file. If the inventory file does not exist, start with an empty
 # inventory and continue running without producing an error.
-def check_file(file_path: str) -> bool:
-    path = Path(file_path)
-    # Check that it exists, is an actual file (not a folder), and ends with .txt
+def check_file(data_file: str) -> bool:
+    path = Path(data_file)
+    # Check that it exists, is an actual file (not a folder), and ends with .json
     return path.is_file() and path.suffix.lower() == ".json"
 
+def check_user_input(user_input):
+    #check if its digit. and if its digit return the number
+    if user_input.isdigit():
+        return user_input
+    else:
+        return "NaN"
 
 def load_inventory():
     #check if checkfile is true if true read file or "load file"
@@ -47,12 +52,13 @@ def load_inventory():
         with open(data_file, "w", encoding="utf-8") as f:
             pass
 
-def check_user_input(user_input):
-    #check if its digit. and if its digit return the number
-    if user_input.isdigit():
-        return user_input
+def display_all():
+    if check_file(data_file):
+        with open(data_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data
     else:
-        return "NaN"
+        return "Error: Missing File"
 
 # def save_inventory(valid_transaction):
 #     next_id = 1001
@@ -81,19 +87,7 @@ def check_user_input(user_input):
 
 #         return f"{content}\n\nNew Order Added:\n{last_order}\n\nOrder successfully saved to order.txt"
 
-
-
-
-# 2. History Tracking: Use a Python list (array) to store every valid transaction
-# amount entered.
-valid_transaction = []
-
-
-# # 4. generate_report(total_units, failed_attempts): A dedicated function to print
-# # the final summary.
-# def generate_report(current_total, errors):
-#     return current_total, errors
-
+inventory_data = display_all()
 
 while True:
     #if true run the program
@@ -123,9 +117,37 @@ while True:
 
     user_option = input("Enter Option: ")
     if check_user_input(user_option) == "1":
-        print("display all product")
+        
+        print(
+            "--------------------------------------------------------\n"
+            "Current Inventory\n"
+            "--------------------------------------------------------"
+            )
+        if not inventory_data:
+            print("Inventory Not found") 
+        else:
+            for item in inventory_data:
+                print(
+                        f"ID: {item['id']} | Name: {item['name']} | Price: ${item['price']:.2f} | Stock: {item['stock']}"
+                    )
+    elif check_user_input(user_option) == "2":
+        print("\nAdd New Product\n")
+        product_id = input("Product ID: ").strip()
+        product_name = input("Product Name: ").strip()
 
+        # Convert price to float and stock to int
+        price = float(input("Price: "))
+        stock = int(input("Stock Quantity: "))
 
+        new_product = {
+            "id": product_id,
+            "name": product_name,
+            "price": price,
+            "stock": stock,
+        }
+
+        inventory_data.append(new_product)
+        print("Product added sucessfully!")
 
 
 
