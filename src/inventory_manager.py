@@ -149,6 +149,39 @@ while True:
         inventory_data.append(new_product)
         print("Product added sucessfully!")
 
+    elif check_user_input(user_option) == "3":
+        print("Update Stock")
+        product_id = input("Enter Product ID: ").upper()
+        product_item = None
+        for item in inventory_data:
+            # Safely read the id, returns None if "id" is missing
+            if item.get("id") == product_id:
+                product_item = item
+                print("Product Found")
+                print(
+                    f"Name: {item['name']}\n"
+                    f"Stock: {item['stock']}\n"   
+                )
+
+                if product_item: 
+                    product_stock = int(input("New Stock Quantity: "))
+                    product_item["stock"] = product_stock
+                    print("Product updated sucessfully!")
+        # if found_item:
+        #     # Update the value using standard assignment
+        #     found_item["stock"] = 25
+        #     found_item["price"] = 1199.99
+        #     print(f"Updated {found_item.get('name')}")
+        # else:
+        #     print("Item not found.")
+
+        # if found_item:
+        # # .update() modifies multiple fields at once
+        # found_item.update({
+        #     "price": 1050.00,
+        #     "stock": 30
+        # })
+
 
 
     # if check_user_input(user_input) == "quit":
