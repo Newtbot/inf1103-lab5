@@ -69,34 +69,25 @@ def update_stock(product_item: dict):
     product_item["stock"] = product_stock
     print("Product updated sucessfully!")
 
-# def search_product():
+def search_product(inventory_data: list):
+    product_id = input("Enter Product ID: ").upper()
+    product_item = None
+    for item in inventory_data:
+        # Safely read the id, returns None if "id" is missing
+        if item.get("id") == product_id:
+            product_item = item
+            print("Product Found")
+            print(
+                f"Name: {item['name']}\n"
+                f"Stock: {item['stock']}\n"   
+                )
 
-# def save_inventory(valid_transaction):
-#     next_id = 1001
+    return product_item
 
-#     # 1. Read existing file to find the highest current ID
-#     if os.path.exists(file):
-#         with open(file, "r", encoding="utf-8") as f:
-#             existing_ids = []
-#             for line in f:
-#                 parts = line.strip().split(",")
-#                 first_item = parts[0].strip()
-#                 if first_item.isdigit():
-#                     existing_ids.append(int(first_item))
-                
-#             if existing_ids:
-#                 next_id = max(existing_ids) + 1
-#     with open(file, "a", encoding="utf-8") as f:
-#         for transaction in valid_transaction:
-#             product_name , quantity = transaction
-#             f.write(f"{next_id}, {product_name}, {quantity}\n")
-            
-#     with open(file, "r", encoding="utf-8") as f:
-#         content = f.read()
-#         lines = [line.strip() for line in content.splitlines() if line.strip()]
-#         last_order = lines[-1] if lines else "No orders found"
+def save_inventory(data_file: str, inventory_data: list):
+        with open(data_file, "w", encoding="utf-8") as f:
+            json.dump(inventory_data, f, indent=4)
 
-#         return f"{content}\n\nNew Order Added:\n{last_order}\n\nOrder successfully saved to order.txt"
 
 inventory_data = display_all()
 
@@ -161,58 +152,42 @@ while True:
 
     elif check_user_input(user_option) == "3":
         print("Update Stock")
-        product_id = input("Enter Product ID: ").upper()
-        product_item = None
-        for item in inventory_data:
-            # Safely read the id, returns None if "id" is missing
-            if item.get("id") == product_id:
-                product_item = item
-                print("Product Found")
-                print(
-                    f"Name: {item['name']}\n"
-                    f"Stock: {item['stock']}\n"   
-                )
+        product_item = search_product(inventory_data)
 
-                if product_item: 
-                    update_stock(product_item)
+        if product_item:
+            update_stock(product_item)
+        else:
+            print("Product not found.")
 
 
     elif check_user_input(user_option) == "4":
         print("Search Stock")
-        product_id = input("Enter Product ID: ").upper()
-        product_item = None
-        for item in inventory_data:
-            # Safely read the id, returns None if "id" is missing
-            if item.get("id") == product_id:
-                product_item = item
-                print("Product Found")
-                print(
-                    f"Name: {item['name']}\n"
-                    f"Stock: {item['stock']}\n"   
-                )
+        product_item = search_product(inventory_data)
+        if product_item:
+            print(
+            "--------------------------------------------------------\n"
+            f"ID: {product_item['id']}\n"
+            f"Name: {product_item['name']}\n"
+            f"Price: ${product_item['price']}\n"
+            f"Stock: {product_item['stock']}\n"
+            "--------------------------------------------------------"
+            )
+        else: 
+            print("Product not found")
+    elif check_user_input(user_option) == "5":
+        print("Saving inventory......")
+        print("Inventory saved successfully to inventory.json.")
+        save_inventory(data_file, inventory_data)
 
-
-
-
-
-    # if check_user_input(user_input) == "quit":
-    #     # 3. Write-Back: When the user types quit, save the final total and the transaction
-    #     # history list to inventory.txt.
-    #     print(save_inventory(valid_transaction))
-
-    #     total_inventory , errors = generate_report(current_total, errors)
-    #     break
-
-    # #logic of my operations
-    # elif (check_user_input(user_input)):
-    #     stock_value = int(user_input)
-
-    #     #append values to array for file writing operations
-    #     valid_transaction.append((product_input, stock_value))
-
-    #     #pass user input to process delivery for logic oprs
-    #     current_total = process_delivery(current_total, stock_value)
-
+    
+    elif check_user_input(user_option) == "6":
+        save_inventory(data_file, inventory_data)
+        print("Saving inventory before exit...")
+        print(f"Inventory saved successfully.\n")
+        print(
+            f"Thank you for using Inventory Management System.\n"
+            f"Program terminated.")
+        break
 
     else:
         print("Please enter a valid integer. Eg. `1` ")
